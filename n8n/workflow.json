@@ -1,0 +1,130 @@
+{
+  "name": "ScreenSmart Post-Analysis Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "post-analysis",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-trigger-node",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.tier }}",
+              "value2": "Strong Fit"
+            }
+          ]
+        }
+      },
+      "id": "check-tier-node",
+      "name": "Is Strong Fit?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        350,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.email }}",
+        "subject": "=Interview Invitation: Backend Developer - ScreenSmart",
+        "message": "=Hi {{ $json.body.name }},\n\nCongratulations! We reviewed your resume, and your experience aligns strongly with our Job Description.\n\nWe would like to invite you for an interview. Please confirm your preferred slot:\n- Monday 10 AM\n- Tuesday 2 PM\n\nBest regards,\nRecruitment Team",
+        "options": {}
+      },
+      "id": "gmail-send-node",
+      "name": "Gmail (Apps Script Trigger)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        600,
+        200
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gmail-credential-id",
+          "name": "Gmail Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:5000/schedule_interview",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"id\": \"{{ $json.body.id }}\",\n  \"time\": \"{{ $json.body.proposed_slots[0] }}\"\n}",
+        "options": {}
+      },
+      "id": "update-dashboard-node",
+      "name": "Update Dashboard Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        850,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Is Strong Fit?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Strong Fit?": {
+      "main": [
+        [
+          {
+            "node": "Gmail (Apps Script Trigger)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Dashboard Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail (Apps Script Trigger)": {
+      "main": [
+        [
+          {
+            "node": "Update Dashboard Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "post-analysis-version",
+  "id": "post-analysis-workflow",
+  "tags": []
+}

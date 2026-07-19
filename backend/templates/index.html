@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScreenSmart - AI Resume Screener</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #151c2c;
+            --accent-primary: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #243049;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background-color: var(--card-bg);
+            padding: 3rem 2.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Subtle glowing background effect */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        h1 {
+            text-align: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            letter-spacing: 0.02em;
+        }
+
+        /* Custom File Input Styling */
+        .file-upload-wrapper {
+            position: relative;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .file-upload-wrapper:hover {
+            border-color: var(--accent-primary);
+            background-color: rgba(59, 130, 246, 0.04);
+        }
+
+        .file-upload-wrapper svg {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .file-upload-wrapper:hover svg {
+            color: var(--accent-primary);
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .file-upload-text span {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .btn-submit {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .dashboard-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .dashboard-link a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .dashboard-link a:hover {
+            color: var(--accent-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ScreenSmart</h1>
+        <p class="subtitle">AI-Powered Resume Screening & Match Analysis</p>
+
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            
+            <div class="form-group">
+                <label>Upload Resumes (PDFs - Select one or multiple)</label>
+                <div class="file-upload-wrapper" id="resume-wrapper">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 0.5rem auto; display: block;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    <span class="file-upload-text" id="resume-text"><span>Choose files</span> or drag them here</span>
+                    <input
+                        type="file"
+                        name="resume"
+                        accept=".pdf"
+                        multiple
+                        required
+                        onchange="updateFileName(this, 'resume-text')">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Upload Job Description (PDF)</label>
+                <div class="file-upload-wrapper" id="jd-wrapper">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 0.5rem auto; display: block;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="file-upload-text" id="jd-text"><span>Choose Job Description</span> or drag here</span>
+                    <input
+                        type="file"
+                        name="jd"
+                        accept=".pdf"
+                        required
+                        onchange="updateFileName(this, 'jd-text')">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Upload & Analyze Batch
+            </button>
+        </form>
+
+        <div class="dashboard-link">
+            <a href="/dashboard">View Recruiter Dashboard &rarr;</a>
+        </div>
+    </div>
+
+    <script>
+        function updateFileName(input, textId) {
+            const textEl = document.getElementById(textId);
+            if (input.files.length > 1) {
+                textEl.innerHTML = `<strong>${input.files.length} files selected</strong>`;
+            } else if (input.files.length === 1) {
+                textEl.innerHTML = `Selected: <strong>${input.files[0].name}</strong>`;
+            } else {
+                textEl.innerHTML = `<span>Choose file(s)</span> or drag them here`;
+            }
+        }
+    </script>
+</body>
+</html>

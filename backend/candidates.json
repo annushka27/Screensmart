@@ -1,0 +1,109 @@
+[
+    {
+        "id": "160ee9f9-e19c-43bc-8258-3cfb48d432c7",
+        "candidate_name": "John Doe",
+        "score": 82,
+        "tier": "Strong Fit",
+        "justification": "The candidate has 3+ years of experience as a Python Developer, perfectly matching the 2-4 years requirement. He possesses key required skills like Python, Flask, SQL, Git, and REST APIs, along with preferred Machine Learning exposure and a B.Tech in Computer Science. However, he is missing Docker and AWS Basics from the required list.",
+        "matched_skills": [
+            "Python",
+            "Flask",
+            "SQL",
+            "REST APIs",
+            "Git",
+            "Machine Learning basics"
+        ],
+        "missing_skills": [
+            "Docker",
+            "AWS Basics",
+            "CI/CD",
+            "Linux"
+        ],
+        "experience_match": "Excellent",
+        "education_match": "Excellent",
+        "strengths": [
+            "3+ years of relevant Python and Flask backend development experience",
+            "B.Tech in Computer Science matches education criteria",
+            "Hands-on experience with REST API integration and SQL query optimization",
+            "Machine Learning baseline knowledge shown through projects"
+        ],
+        "weaknesses": [
+            "No mention of Docker for containerization",
+            "Lacks AWS cloud experience",
+            "Missing preferred skills like CI/CD and Linux"
+        ],
+        "recommendation": "Strong Fit",
+        "interview_status": "Not Scheduled",
+        "interview_time": ""
+    },
+    {
+        "id": "eeb5448b-d577-4a93-835a-c97f6741d66f",
+        "candidate_name": "John Doe",
+        "score": 82,
+        "tier": "Strong Fit",
+        "justification": "John Doe is a Strong Fit as he has over 3 years of experience as a Python Developer, matching the 2-4 years requirement. He possesses core required skills including Python, Flask, SQL, REST APIs, and Git. Additionally, his academic background matches, and he has Machine Learning project experience. However, he is missing Docker, AWS Basics, and CI/CD experience from his profile.",
+        "matched_skills": [
+            "Python",
+            "Flask",
+            "SQL",
+            "REST APIs",
+            "Git",
+            "Machine Learning basics"
+        ],
+        "missing_skills": [
+            "Docker",
+            "AWS Basics",
+            "CI/CD",
+            "Linux"
+        ],
+        "experience_match": "Good",
+        "education_match": "Good",
+        "strengths": [
+            "3+ years of relevant Python and Flask backend development experience",
+            "Solid hands-on experience with SQL and REST API integration",
+            "Relevant B.Tech in Computer Science degree",
+            "Exposure to Machine Learning through academic/personal projects"
+        ],
+        "weaknesses": [
+            "No mentioned experience with Docker or containerization",
+            "Lacks cloud platform exposure (AWS Basics)",
+            "Missing CI/CD and Linux experience"
+        ],
+        "recommendation": "Strong Fit",
+        "interview_status": "Proposed Slots Sent (Gmail & Calendar)",
+        "interview_time": "Mon, Jul 20, 2026 at 10:00 AM",
+        "proposed_slots": [
+            "Mon, Jul 20, 2026 at 10:00 AM",
+            "Tue, Jul 21, 2026 at 02:00 PM",
+            "Wed, Jul 22, 2026 at 04:00 PM"
+        ]
+    },
+    {
+        "id": "bb9d6916-7eb0-4897-8ff4-c13cb51cb7d4",
+        "candidate_name": "Not Provided",
+        "score": 0,
+        "tier": "Not a Fit",
+        "justification": "No resume text was provided for analysis. Please provide a resume to get an accurate ATS evaluation against the Job Description.",
+        "matched_skills": [],
+        "missing_skills": [
+            "Python",
+            "Flask",
+            "FastAPI",
+            "SQL (MySQL/PostgreSQL)",
+            "REST APIs",
+            "Git",
+            "Docker",
+            "AWS Basics"
+        ],
+        "experience_match": "None",
+        "education_match": "None",
+        "strengths": [],
+        "weaknesses": [
+            "No resume submitted for evaluation"
+        ],
+        "recommendation": "Reject",
+        "interview_status": "Not Scheduled",
+        "interview_time": "",
+        "proposed_slots": []
+    }
+]

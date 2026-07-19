@@ -1,0 +1,22 @@
+# Virtual Environment
+venv/
+.venv/
+ENV/
+
+# Environment Variables (Sensitive data)
+.env
+.env.*
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local Data / Uploads
+data/
+uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
