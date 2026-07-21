@@ -199,6 +199,25 @@
             .score-circle { margin: 0 auto; }
             .action-bar { flex-direction: column; }
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal-content {
+            background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        .modal-content h3 { font-family: 'Outfit', sans-serif; margin-bottom: 1rem; font-size: 1.25rem; }
+        .modal-content input[type="datetime-local"] {
+            width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; margin-bottom: 1.5rem; font-family: inherit;
+        }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 1rem; }
+        .modal-actions button { padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; border: none; }
+        .btn-cancel { background: #f3f4f6; color: #4b5563; }
+        .btn-cancel:hover { background: #e5e7eb; }
+        .btn-confirm { background: var(--gradient); color: white; }
     </style>
 </head>
 <body>
@@ -366,8 +385,8 @@
                     </div>
                     
                     <div class="action-bar">
-                        <button class="btn-gradient" style="flex: 1;" onclick="alert('Interview Scheduled!')">Schedule Interview</button>
-                        <button class="btn-outline" style="flex: 1;">Send Email</button>
+                        <button class="btn-gradient" style="flex: 1;" onclick="scheduleInterview()">Schedule Interview</button>
+                        <button class="btn-outline" style="flex: 1;" onclick="sendEmail()">Send Email</button>
                     </div>
                 </div>
                 
@@ -385,12 +404,29 @@
 
     </div>
 
+    <!-- Schedule Modal -->
+    <div class="modal-overlay" id="schedule-modal">
+        <div class="modal-content">
+            <h3>Schedule Interview</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">Select a date and time for the interview.</p>
+            <input type="datetime-local" id="interview-time-input">
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeScheduleModal()">Cancel</button>
+                <button class="btn-confirm" onclick="confirmSchedule()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const candidates = {{ candidates|tojson|safe if candidates else '[]' }};
         const singleView = {{ 'true' if single_view else 'false' }};
+        let currentCandidateId = null;
         
         // Navigation
         function switchTab(tabId) {
+            if (!singleView) {
+                window.history.replaceState(null, null, `#${tabId}`);
+            }
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.menu-item')[tabId === 'dashboard' ? 0 : 1].classList.add('active');
             
@@ -466,6 +502,7 @@
         }
 
         function selectCandidate(id) {
+            currentCandidateId = id;
             document.querySelectorAll('.candidate-item').forEach(el => el.classList.remove('active'));
             const item = document.getElementById(`item-${id}`);
             if(item) item.classList.add('active');
@@ -509,10 +546,77 @@
             if(!badBox.innerHTML) badBox.innerHTML = '<div class="reasoning-line">No missing requirements.</div>';
         }
 
+        async function sendEmail() {
+            if (!currentCandidateId) return;
+            try {
+                const response = await fetch('/send_invite', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: currentCandidateId })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Email sent successfully!');
+                } else {
+                    alert('Failed to send email: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error sending email:', error);
+                alert('Error sending email. Check console for details.');
+            }
+        }
+
+        async function scheduleInterview() {
+            if (!currentCandidateId) return;
+            document.getElementById('schedule-modal').style.display = 'flex';
+        }
+
+        function closeScheduleModal() {
+            document.getElementById('schedule-modal').style.display = 'none';
+            document.getElementById('interview-time-input').value = '';
+        }
+
+        async function confirmSchedule() {
+            const timeInput = document.getElementById('interview-time-input');
+            const time = timeInput.value;
+            if (!time) {
+                alert("Please select a date and time.");
+                return;
+            }
+            
+            // Format time for readability (optional)
+            const dateObj = new Date(time);
+            const formattedTime = dateObj.toLocaleString();
+
+            try {
+                const response = await fetch('/schedule_interview', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: currentCandidateId, time: formattedTime })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Interview scheduled successfully!');
+                    closeScheduleModal();
+                    // Optionally refresh stats and list
+                    location.reload(); 
+                } else {
+                    alert('Failed to schedule interview: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error scheduling interview:', error);
+                alert('Error scheduling interview. Check console for details.');
+            }
+        }
+
         window.onload = () => {
             updateStats();
             filterList();
-            if (singleView) {
+            if (singleView || window.location.hash === '#candidates') {
                 switchTab('candidates');
             } else {
                 switchTab('dashboard');
