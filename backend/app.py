@@ -21,7 +21,6 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 os.makedirs(os.path.join(UPLOAD_FOLDER, "resumes"), exist_ok=True)
-os.makedirs(os.path.join(UPLOAD_FOLDER, "jd"), exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
@@ -75,11 +74,8 @@ def screener():
 @app.route("/upload", methods=["POST"])
 def upload():
     resumes = request.files.getlist("resume")
-    jd = request.files["jd"]
-
-    jd_path = os.path.join(UPLOAD_FOLDER, "jd", jd.filename)
-    jd.save(jd_path)
-    jd_text = extract_text(jd_path)
+    jd_text = request.form.get("jd_text", "")
+    job_title = request.form.get("job_title", "Backend Developer")
 
     candidates = load_candidates()
 
@@ -140,7 +136,7 @@ def upload():
             save_candidates(candidates)
 
             if tier == "Strong Fit" and email_to_use:
-                role = "Backend Developer"
+                role = job_title
                 subject = f"Interview Invitation: {role} - ScreenSmart Recruitment"
                 slots_text = "\n".join([f"📅 {s}" for s in proposed])
                 body = f"Dear {candidate_data['name']},\n\nThank you for your application for the {role} position. We reviewed your resume, and your experience aligns strongly with our Job Description.\n\nWe would like to invite you for an interview. Please reply to this email confirming your preference from the following available slots:\n\n{slots_text}\n\nBest regards,\nRecruitment Team\nScreenSmart Suite"

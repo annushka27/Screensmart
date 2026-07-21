@@ -3,1523 +3,486 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScreenSmart - AI Recruitment Assistant</title>
-    <!-- Google Fonts -->
+    <title>ScreenSmart - AI Recruiting Copilot</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --sidebar-bg: #080b13;
-            --card-bg: #111827;
-            --accent-primary: #4f46e5;
-            --accent-success: #10b981;
-            --accent-warning: #f59e0b;
-            --accent-danger: #ef4444;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --border-color: #1f2937;
-            --hover-bg: #1f2937;
+            --bg-color: #fafafa;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border-color: #f3f4f6;
+            --accent-primary: #d946ef;
+            --accent-secondary: #ec4899;
+            --gradient: linear-gradient(135deg, #a855f7, #ec4899);
+            
+            --card-purple: #f3e8ff;
+            --card-purple-text: #7e22ce;
+            --card-pink: #fce7f3;
+            --card-pink-text: #be185d;
+            --card-yellow: #fef9c3;
+            --card-yellow-text: #a16207;
+            --card-red: #fee2e2;
+            --card-red-text: #b91c1c;
+            --card-cyan: #cffafe;
+            --card-cyan-text: #0f766e;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            overflow: hidden;
-        }
-
-        /* Sidebar Navigation */
+        /* Sidebar */
         .sidebar {
-            width: 260px;
-            background-color: var(--sidebar-bg);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 1.5rem;
-            flex-shrink: 0;
-            height: 100vh;
+            width: 260px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; padding: 1.5rem; flex-shrink: 0; height: 100vh;
         }
-
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: white;
-            margin-bottom: 2rem;
-        }
-
+        .sidebar-brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--text-main); margin-bottom: 3rem; }
         .brand-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--accent-primary), #3b82f6);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
+            width: 40px; height: 40px; background: var(--gradient); border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.4rem; color: white;
         }
+        .brand-name { font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700; line-height: 1.1; }
+        .brand-sub { font-size: 0.75rem; color: var(--text-muted); }
 
-        .brand-text {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .brand-name {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
-        .brand-sub {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            flex-grow: 1;
-        }
-
+        .sidebar-menu { display: flex; flex-direction: column; gap: 0.5rem; flex-grow: 1; }
         .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            border-radius: 10px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: all 0.2s;
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.25rem; border-radius: 12px;
+            color: var(--text-main); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
         }
+        .menu-item:hover { background-color: #f3f4f6; }
+        .menu-item.active { background: var(--gradient); color: white; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3); }
 
-        .menu-item:hover, .menu-item.active {
-            background-color: rgba(79, 70, 229, 0.1);
-            color: white;
-        }
-
-        .menu-item.active {
-            border-left: 3px solid var(--accent-primary);
-            border-radius: 0 10px 10px 0;
-            background-color: #1e1b4b;
-        }
-
-        /* Current Job Widget */
-        .job-widget {
-            background-color: #1e293b;
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--border-color);
-        }
-
-        .job-widget-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-        }
-
-        .job-widget-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: white;
-            margin-bottom: 0.5rem;
-        }
-
-        .job-widget-link {
-            font-size: 0.75rem;
-            color: var(--accent-primary);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        /* User Profile Widget */
-        .user-widget {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            border-top: 1px solid var(--border-color);
-            padding-top: 1.25rem;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background-color: #374151;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: white;
-        }
-
-        .user-role {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
+        .footer-brand { margin-top: auto; font-size: 0.75rem; color: var(--text-muted); }
+        .footer-brand .status { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #10b981; margin-right: 4px; }
 
         /* Main Panel */
-        .main-panel {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-            background-color: var(--bg-color);
+        .main-panel { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; padding: 2rem 3rem; background-color: var(--bg-color); }
+        
+        /* Header */
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .page-title h2 { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 700; color: #111827; }
+        .page-title p { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem; }
+        .btn-gradient {
+            background: var(--gradient); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px;
+            font-weight: 600; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3); transition: transform 0.2s;
         }
+        .btn-gradient:hover { transform: translateY(-2px); }
 
-        /* Header area */
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .panel-title h2 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .panel-title p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-
-        /* Top Indicators / Summary Row */
-        .summary-row {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 1rem;
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
+        /* Dashboard Overview Section */
+        #view-dashboard { display: flex; flex-direction: column; gap: 2.5rem; }
+        
+        .summary-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; }
         .summary-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1rem 1.25rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border-radius: 16px; padding: 1.5rem 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 0.5rem;
         }
+        .summary-card.purple { background-color: var(--card-purple); color: var(--card-purple-text); }
+        .summary-card.pink { background-color: var(--card-pink); color: var(--card-pink-text); }
+        .summary-card.yellow { background-color: var(--card-yellow); color: var(--card-yellow-text); }
+        .summary-card.red { background-color: var(--card-red); color: var(--card-red-text); }
+        .summary-card.cyan { background-color: var(--card-cyan); color: var(--card-cyan-text); }
+        
+        .summary-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        .summary-value { font-family: 'Outfit', sans-serif; font-size: 2.5rem; font-weight: 800; line-height: 1; margin: 0.25rem 0; }
+        .summary-trend { font-size: 0.8rem; font-weight: 500; }
 
-        .summary-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
+        /* Form Section */
+        .form-section { background-color: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color); padding: 2rem; }
+        .form-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        .form-section-header h3 { font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700; }
+        .badge-power { font-size: 0.7rem; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 20px; background-color: #f3e8ff; color: #9333ea; }
+        
+        .form-group { margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+        .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+        .form-control {
+            width: 100%; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; background-color: #f9fafb;
+            font-size: 0.95rem; color: var(--text-main); outline: none; transition: border-color 0.2s;
         }
-
-        .summary-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
+        .form-control:focus { border-color: #d946ef; }
+        textarea.form-control { resize: vertical; min-height: 150px; }
+        
+        /* File Upload */
+        .file-upload-wrapper {
+            position: relative; border: 2px dashed #d1d5db; border-radius: 12px; padding: 2rem; text-align: center;
+            background-color: #f9fafb; cursor: pointer; transition: all 0.2s;
         }
-
-        .summary-value {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: white;
-            margin: 0.2rem 0;
-        }
-
-        .summary-trend {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .summary-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .summary-icon.total { background-color: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-        .summary-icon.strong { background-color: rgba(16, 185, 129, 0.1); color: var(--accent-success); }
-        .summary-icon.possible { background-color: rgba(245, 158, 11, 0.1); color: var(--accent-warning); }
-        .summary-icon.not { background-color: rgba(239, 68, 68, 0.1); color: var(--accent-danger); }
-        .summary-icon.scheduled { background-color: rgba(79, 70, 229, 0.1); color: var(--accent-primary); }
-
-        /* Dashboard Body Layout */
-        .panel-body {
-            display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            flex-grow: 1;
-            overflow: hidden;
-        }
-
-        @media (max-width: 1200px) {
-            .panel-body {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Left Column: Candidate List view */
-        .candidates-list-pane {
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border-color);
-            height: 100%;
-            overflow: hidden;
-            padding: 1.5rem 2rem;
-        }
-
-        .list-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .list-search-row {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .search-input-wrapper {
-            position: relative;
-            flex-grow: 1;
-        }
-
-        .search-input-wrapper input {
-            width: 100%;
-            padding: 0.65rem 1rem 0.65rem 2.25rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background-color: #1f2937;
-            color: white;
-            font-size: 0.9rem;
-            outline: none;
-        }
-
-        .search-input-wrapper svg {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        select.filter-select {
-            padding: 0.65rem 1rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background-color: #1f2937;
-            color: white;
-            font-size: 0.9rem;
-            outline: none;
-            cursor: pointer;
-        }
-
-        /* Candidate List Container */
-        .candidates-scroll {
-            flex-grow: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            padding-right: 0.5rem;
-        }
-
+        .file-upload-wrapper:hover { border-color: #d946ef; background-color: #fdf4ff; }
+        .file-upload-wrapper input[type="file"] { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .file-upload-text { font-size: 0.95rem; color: var(--text-muted); font-weight: 500; }
+        .file-upload-text span { color: #d946ef; font-weight: 600; }
+        
+        /* Candidates List View */
+        #view-candidates { display: none; flex-direction: column; height: 100%; }
+        .candidates-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; flex-grow: 1; overflow: hidden; }
+        
+        .list-card { background-color: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
+        .list-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .list-header h3 { font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700; }
+        .filter-select { padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: #f9fafb; font-size: 0.85rem; outline: none; cursor: pointer; }
+        
+        .list-body { flex-grow: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
         .candidate-item {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: space-between; padding: 1rem; border-radius: 12px;
+            border: 1px solid var(--border-color); background-color: white; cursor: pointer; transition: all 0.2s;
         }
+        .candidate-item:hover, .candidate-item.active { border-color: #ec4899; background-color: #fdf4ff; box-shadow: 0 4px 6px rgba(236,72,153,0.1); }
+        .candidate-initials { width: 40px; height: 40px; border-radius: 50%; background: var(--gradient); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.9rem; }
+        
+        .c-info { display: flex; align-items: center; gap: 1rem; }
+        .c-name { font-weight: 700; font-size: 0.95rem; color: var(--text-main); }
+        .c-meta { font-size: 0.75rem; color: var(--text-muted); }
+        .c-score { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.1rem; }
+        
+        .badge { padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
+        .badge-strong { background-color: #dcfce7; color: #166534; }
+        .badge-possible { background-color: #fef9c3; color: #854d0e; }
+        .badge-not { background-color: #fee2e2; color: #991b1b; }
 
-        .candidate-item:hover, .candidate-item.active {
-            border-color: var(--accent-primary);
-            background-color: var(--hover-bg);
-        }
-
-        .candidate-item-left {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .candidate-initials-bubble {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background-color: #374151;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: white;
-            font-size: 0.9rem;
-        }
-
-        .candidate-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
-        }
-
-        .candidate-meta-name {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: white;
-        }
-
-        .candidate-meta-title {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .candidate-item-center {
-            text-align: right;
-            display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
-        }
-
-        .candidate-item-score {
-            font-weight: 700;
-            font-size: 0.95rem;
-            color: white;
-        }
-
-        .candidate-item-score-lbl {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-
-        .candidate-item-right {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.4rem;
-        }
-
-        /* Badges */
-        .badge {
-            font-size: 0.7rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-
-        .badge-strong { background-color: rgba(16, 185, 129, 0.1); color: var(--accent-success); }
-        .badge-possible { background-color: rgba(245, 158, 11, 0.1); color: var(--accent-warning); }
-        .badge-not { background-color: rgba(239, 68, 68, 0.1); color: var(--accent-danger); }
-
-        .status-badge {
-            font-size: 0.7rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 6px;
-            font-weight: 600;
-            background-color: #1e293b;
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-        }
-        .status-badge.scheduled { background-color: rgba(16, 185, 129, 0.15); color: #34d399; }
-        .status-badge.sent { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-        .status-badge.rejected { background-color: rgba(239, 68, 68, 0.15); color: #f87171; }
-
-        /* Right Column: Candidate Detail Pane */
-        .details-pane {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-            padding: 2rem;
-            background-color: #0d1222;
-        }
-
-        .details-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .details-header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .details-avatar {
-            width: 56px;
-            height: 56px;
-            background-color: #4f46e5;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: white;
-        }
-
-        .details-title-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .details-name-row {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .details-name {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .details-sub {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        /* Circular Progress Chart */
-        .details-header-right {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .score-circle-wrapper {
-            position: relative;
-            width: 60px;
-            height: 60px;
-        }
-
-        .score-circle-bg {
-            fill: none;
-            stroke: #1f2937;
-            stroke-width: 4;
-        }
-
-        .score-circle-progress {
-            fill: none;
-            stroke: var(--accent-success);
-            stroke-width: 4;
-            stroke-linecap: round;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-        }
-
-        .score-circle-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Outfit', sans-serif;
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: white;
-        }
-
-        /* Tab Links */
-        .details-tabs {
-            display: flex;
-            gap: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 1.5rem;
-        }
-
-        .tab-link {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            font-weight: 600;
-            padding-bottom: 0.75rem;
-            border: none;
-            background: none;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .tab-link.active {
-            color: white;
-            border-bottom-color: var(--accent-primary);
-        }
-
-        /* Tab Content Panel scrollable */
-        .details-scrollable-body {
-            flex-grow: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            padding-right: 0.5rem;
-        }
-
-        /* Contact Details Widget */
-        .contact-info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.25rem;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--text-main);
-        }
-
-        .contact-item svg {
-            color: var(--text-muted);
-            flex-shrink: 0;
-        }
-
-        .contact-item a {
-            color: var(--accent-primary);
-            text-decoration: none;
-        }
-
-        .contact-item a:hover {
-            text-decoration: underline;
-        }
-
-        /* Key Skills pills list */
-        .skills-pills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .skill-pill {
-            background-color: #1e293b;
-            color: #93c5fd;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            font-size: 0.75rem;
-            padding: 0.35rem 0.75rem;
-            border-radius: 8px;
-            font-weight: 500;
-        }
-
-        /* AI Reasoning List */
-        .reasoning-list-card {
-            background-color: rgba(16, 185, 129, 0.05);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 12px;
-            padding: 1.25rem;
-        }
-
-        .reasoning-list-card.not {
-            background-color: rgba(239, 68, 68, 0.05);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .reasoning-line {
-            display: flex;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            margin-bottom: 0.5rem;
-            color: var(--text-main);
-        }
-
-        .reasoning-line:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Action bar bottom */
-        .details-action-bar {
-            display: flex;
-            gap: 0.75rem;
-            border-top: 1px solid var(--border-color);
-            padding-top: 1.5rem;
-            margin-top: auto;
-        }
-
-        /* Modals & simulation styling */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 120;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #0f172a;
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .modal-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: white;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .form-group label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        input[type="datetime-local"] {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-color);
-            color: white;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-        }
+        /* Candidate Detail Pane */
+        .detail-pane { background-color: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
+        .detail-header { padding: 2rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: flex-start; }
+        .detail-name { font-family: 'Outfit', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .detail-sub { font-size: 0.9rem; color: var(--text-muted); }
+        .score-circle { width: 70px; height: 70px; border-radius: 50%; border: 4px solid #ec4899; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.25rem; color: #ec4899; }
+        
+        .detail-body { padding: 2rem; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 1.5rem; }
+        .section-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        .reasoning-box { background-color: #f9fafb; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; }
+        .reasoning-line { display: flex; gap: 0.5rem; font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.5rem; color: var(--text-main); }
+        .reasoning-line:last-child { margin-bottom: 0; }
+        
+        .skills-container { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .skill-tag { background-color: #fdf4ff; color: #c026d3; border: 1px solid #f5d0fe; padding: 0.35rem 0.75rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600; }
+        
+        .action-bar { padding: 1.5rem 2rem; border-top: 1px solid var(--border-color); display: flex; gap: 1rem; }
+        .btn-outline { background: transparent; border: 2px solid #ec4899; color: #ec4899; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-outline:hover { background: #fdf4ff; }
+        
+        /* Empty State */
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); text-align: center; padding: 2rem; }
     </style>
 </head>
 <body>
 
-    <!-- Left Sidebar -->
+    <!-- Sidebar -->
     <div class="sidebar">
-        <div>
-            <a href="/" class="sidebar-brand">
-                <div class="brand-icon">S</div>
-                <div class="brand-text">
-                    <span class="brand-name">ScreenSmart</span>
-                    <span class="brand-sub">AI Recruitment Assistant</span>
-                </div>
+        <a href="/" class="sidebar-brand">
+            <div class="brand-icon">S</div>
+            <div class="brand-text">
+                <div class="brand-name">ScreenSmart</div>
+                <div class="brand-sub">AI Recruiting Copilot</div>
+            </div>
+        </a>
+        <div class="sidebar-menu">
+            <div class="menu-item active" onclick="switchTab('dashboard')">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/></svg>
+                Dashboard
+            </div>
+            <div class="menu-item" onclick="switchTab('candidates')">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                Candidates
+            </div>
+            <a href="/" class="menu-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                About Us
             </a>
-            <div class="sidebar-menu">
-                <a href="/dashboard" class="menu-item active">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/></svg>
-                    Dashboard
-                </a>
-                <a href="#" class="menu-item">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                    Candidates
-                </a>
-                <a href="#" class="menu-item">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                    Interviews
-                </a>
-                <a href="#" class="menu-item">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    Calendar
-                </a>
-                <a href="#" class="menu-item">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
-                    Analytics
-                </a>
-                <a href="#" class="menu-item">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    Job Descriptions
-                </a>
-                <a href="#" class="menu-item">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    Settings
-                </a>
-            </div>
         </div>
-
-        <div>
-            <div class="job-widget">
-                <div class="job-widget-title">Current Job Role</div>
-                <div class="job-widget-name">Backend Developer</div>
-                <a href="#" class="job-widget-link">View JD &rarr;</a>
-            </div>
-            <div class="user-widget">
-                <div class="user-avatar">RM</div>
-                <div class="user-info">
-                    <span class="user-name">Recruiter Manager</span>
-                    <span class="user-role">recruiter@company.com</span>
-                </div>
-            </div>
+        <div class="footer-brand">
+            <span class="status"></span> API Online<br>
+            <span style="margin-top: 4px; display: inline-block;">Made with ❤️ by Team Warrior</span>
         </div>
     </div>
 
-    <!-- Main Panel -->
+    <!-- Main Content -->
     <div class="main-panel">
-        <div class="panel-header">
-            <div class="panel-title">
-                <h2>Dashboard</h2>
-                <p>Review AI analyzed candidates and manage interviews</p>
+        
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard">
+            <div class="page-header">
+                <div class="page-title">
+                    <h2>Dashboard Overview</h2>
+                    <p>Real-time hiring pipeline insights</p>
+                </div>
+                <button class="btn-gradient" onclick="document.getElementById('jd-form').scrollIntoView({behavior: 'smooth'})">+ New Screening</button>
             </div>
-            <div class="header-actions">
-                {% if not single_view %}
-                <form action="/load_samples" method="POST" style="display: inline;">
-                    <button type="submit" class="btn btn-secondary" style="background-color: rgba(79, 70, 229, 0.1); color: #818cf8; border: 1px solid rgba(79, 70, 229, 0.2);">
-                        Load 15 Sample Resumes
-                    </button>
-                </form>
-                {% endif %}
-                <a href="/screener" class="btn btn-primary">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 8px; vertical-align: middle;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Upload Resumes
-                </a>
-            </div>
-        </div>
 
-        <!-- Top summary Cards row (5 cards) -->
-        <div class="summary-row">
-            <div class="summary-card">
-                <div class="summary-info">
-                    <span class="summary-label">Total Candidates</span>
-                    <span class="summary-value" id="card-total">0</span>
-                    <span class="summary-trend">Processed</span>
+            <!-- Summary Row -->
+            <div class="summary-row">
+                <div class="summary-card purple">
+                    <div class="summary-label">Total Candidates</div>
+                    <div class="summary-value" id="count-total">0</div>
+                    <div class="summary-trend">Reviewed</div>
                 </div>
-                <div class="summary-icon total">👤</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-info">
-                    <span class="summary-label">Strong Fit</span>
-                    <span class="summary-value" id="card-strong">0</span>
-                    <span class="summary-trend" style="color: var(--accent-success);">★ 40%</span>
+                <div class="summary-card pink">
+                    <div class="summary-label">Strong Fit</div>
+                    <div class="summary-value" id="count-strong">0</div>
+                    <div class="summary-trend">Ready to interview</div>
                 </div>
-                <div class="summary-icon strong">👍</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-info">
-                    <span class="summary-label">Possible Fit</span>
-                    <span class="summary-value" id="card-possible">0</span>
-                    <span class="summary-trend" style="color: var(--accent-warning);">⬈ 33%</span>
+                <div class="summary-card yellow">
+                    <div class="summary-label">Possible Fit</div>
+                    <div class="summary-value" id="count-possible">0</div>
+                    <div class="summary-trend">Review needed</div>
                 </div>
-                <div class="summary-icon possible">⭐</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-info">
-                    <span class="summary-label">Not Fit</span>
-                    <span class="summary-value" id="card-not">0</span>
-                    <span class="summary-trend" style="color: var(--accent-danger);">▼ 27%</span>
+                <div class="summary-card red">
+                    <div class="summary-label">Not A Fit</div>
+                    <div class="summary-value" id="count-not">0</div>
+                    <div class="summary-trend">Archived</div>
                 </div>
-                <div class="summary-icon not">👎</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-info">
-                    <span class="summary-label">Interviews Scheduled</span>
-                    <span class="summary-value" id="card-scheduled">0</span>
-                    <span class="summary-trend" style="color: #60a5fa;">This Week</span>
+                <div class="summary-card cyan">
+                    <div class="summary-label">Interviews Scheduled</div>
+                    <div class="summary-value" id="count-scheduled">0</div>
+                    <div class="summary-trend">This week</div>
                 </div>
-                <div class="summary-icon scheduled">📅</div>
             </div>
-        </div>
 
-        <!-- Main Body Grid Layout -->
-        <div class="panel-body">
-            
-            <!-- Left Pane: Candidates list items -->
-            <div class="candidates-list-pane">
-                <div class="list-controls">
-                    <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 700; color: white;">All Candidates (<span id="c-count">0</span>)</h3>
-                    {% if not single_view %}
-                    <div class="list-search-row">
-                        <div class="search-input-wrapper">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            <!-- New Screening Form -->
+            <div class="form-section" id="jd-form">
+                <div class="form-section-header">
+                    <h3>Start New Screening Batch</h3>
+                    <span class="badge-power">POWERED BY GEMINI AI</span>
+                </div>
+                
+                <form action="/upload" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Job Title</label>
+                        <input type="text" name="job_title" class="form-control" placeholder="Senior Backend Engineer" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Job Description</label>
+                        <textarea name="jd_text" class="form-control" placeholder="Paste the full job description here including required skills, years of experience, certifications..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upload Candidate Resumes (PDF)</label>
+                        <div class="file-upload-wrapper">
+                            <svg width="40" height="40" fill="none" stroke="#d946ef" viewBox="0 0 24 24" style="margin: 0 auto 0.75rem auto; display: block;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                             </svg>
-                            <input type="text" id="candidateSearch" placeholder="Search candidates..." oninput="filterAndSortCandidates()">
+                            <span class="file-upload-text" id="resume-text"><span>Choose files</span> or drag them here</span>
+                            <input type="file" name="resume" accept=".pdf" multiple required onchange="updateFileName(this, 'resume-text')">
                         </div>
-                        <select class="filter-select" id="scoreSort" onchange="filterAndSortCandidates()">
-                            <option value="desc">Sort by: Score (High-Low)</option>
-                            <option value="asc">Sort by: Score (Low-High)</option>
-                        </select>
-                        <select class="filter-select" id="tierFilter" onchange="filterAndSortCandidates()">
-                            <option value="All">Filter by Tier</option>
+                    </div>
+
+                    <button type="submit" class="btn-gradient" style="width: 100%; padding: 1rem; font-size: 1rem; margin-top: 1rem;">Process Batch with AI</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- CANDIDATES VIEW -->
+        <div id="view-candidates">
+            <div class="page-header">
+                <div class="page-title">
+                    <h2>All Candidates</h2>
+                    <p>Complete list of screened candidates</p>
+                </div>
+                <button class="btn-gradient" onclick="switchTab('dashboard')">+ New Screening</button>
+            </div>
+
+            <div class="candidates-layout">
+                <!-- List Pane -->
+                <div class="list-card">
+                    <div class="list-header">
+                        <h3>All Candidates</h3>
+                        <select class="filter-select" id="tierFilter" onchange="filterList()">
+                            <option value="All">All Tiers</option>
                             <option value="Strong Fit">Strong Fit</option>
                             <option value="Possible Fit">Possible Fit</option>
                             <option value="Not Fit">Not Fit</option>
                         </select>
-                        <select class="filter-select" id="statusFilter" onchange="filterAndSortCandidates()">
-                            <option value="All">Filter by Status</option>
-                            <option value="Interview Scheduled">Scheduled</option>
-                            <option value="Interview Sent">Email Sent</option>
-                            <option value="Pending">Pending Review</option>
-                            <option value="Rejected">Rejected</option>
-                        </select>
                     </div>
-                    {% endif %}
+                    <div class="list-body" id="c-list">
+                        <!-- Items dynamically injected -->
+                    </div>
                 </div>
 
-                <div class="candidates-scroll" id="candidatesListContainer">
-                    {% for c in candidates %}
-                    <div class="candidate-item" id="item-{{ c.id }}" data-id="{{ c.id }}" data-name="{{ c.name }}" data-score="{{ c.score }}" data-tier="{{ c.tier }}" data-status="{{ c.status }}" onclick="selectCandidate('{{ c.id }}')">
-                        <div class="candidate-item-left">
-                            <div class="candidate-initials-bubble">
-                                {{ c.name[:2]|upper }}
+                <!-- Detail Pane -->
+                <div class="detail-pane" id="c-detail" style="display: none;">
+                    <div class="detail-header">
+                        <div>
+                            <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 0.5rem;">
+                                <h2 class="detail-name" id="det-name">Candidate Name</h2>
+                                <span class="badge" id="det-badge">Tier</span>
                             </div>
-                            <div class="candidate-meta">
-                                <span class="candidate-meta-name">{{ c.name }}</span>
-                                <span class="candidate-meta-title">Backend Developer</span>
-                            </div>
+                            <div class="detail-sub" id="det-email">email@example.com</div>
                         </div>
-                        <div class="candidate-item-center">
-                            <span class="candidate-item-score">{{ c.score }}%</span>
-                            <span class="candidate-item-score-lbl">Match Score</span>
-                        </div>
-                        <div class="candidate-item-right">
-                            {% if c.tier == "Strong Fit" %}
-                                <span class="badge badge-strong">Strong Fit</span>
-                            {% elif c.tier == "Possible Fit" %}
-                                <span class="badge badge-possible">Possible Fit</span>
-                            {% else %}
-                                <span class="badge badge-not">Not Fit</span>
-                            {% endif %}
-
-                            {% if c.status == "Interview Scheduled" %}
-                                <span class="status-badge scheduled">Interview Scheduled</span>
-                            {% elif c.status == "Interview Sent" %}
-                                <span class="status-badge sent">Email Sent</span>
-                            {% elif c.status == "Rejected" %}
-                                <span class="status-badge rejected">Rejected</span>
-                            {% else %}
-                                <span class="status-badge">Pending Review</span>
-                            {% endif %}
-                        </div>
+                        <div class="score-circle" id="det-score">0</div>
                     </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Right Pane: Details overview content -->
-            <div class="details-pane" id="detailsPane" style="display: none;">
-                <div class="details-header">
-                    <div class="details-header-left">
-                        <div class="details-avatar" id="det-avatar">SK</div>
-                        <div class="details-title-info">
-                            <div class="details-name-row">
-                                <h2 class="details-name" id="det-name">Supriya Kumari</h2>
-                                <span class="badge badge-strong" id="det-tier-badge">Strong Fit</span>
-                            </div>
-                            <span class="details-sub" id="det-title-meta">Backend Developer • 4 Years Experience</span>
+                    
+                    <div class="detail-body">
+                        <div>
+                            <div class="section-title">Key Skills Detected</div>
+                            <div class="skills-container" id="det-skills"></div>
+                        </div>
+                        
+                        <div>
+                            <div class="section-title">AI Rationale (Matched)</div>
+                            <div class="reasoning-box" id="det-good"></div>
+                        </div>
+                        
+                        <div>
+                            <div class="section-title" style="color: #b91c1c;">Missing Requirements</div>
+                            <div class="reasoning-box" style="background-color: #fef2f2; border-color: #fca5a5;" id="det-bad"></div>
                         </div>
                     </div>
                     
-                    <div class="details-header-right">
-                        <div style="text-align: right;">
-                            <span style="font-size: 0.9rem; font-weight: 700; color: white;" id="det-score-val">92%</span>
-                            <div style="font-size: 0.7rem; color: var(--text-muted);">Overall Match</div>
-                        </div>
-                        <div class="score-circle-wrapper">
-                            <svg width="60" height="60" viewBox="0 0 60 60">
-                                <circle class="score-circle-bg" cx="30" cy="30" r="26"></circle>
-                                <circle class="score-circle-progress" id="det-circle-stroke" cx="30" cy="30" r="26" stroke-dasharray="163" stroke-dashoffset="13"></circle>
-                            </svg>
-                            <span class="score-circle-text" id="det-circle-text">92%</span>
-                        </div>
+                    <div class="action-bar">
+                        <button class="btn-gradient" style="flex: 1;" onclick="alert('Interview Scheduled!')">Schedule Interview</button>
+                        <button class="btn-outline" style="flex: 1;">Send Email</button>
                     </div>
                 </div>
-
-                <!-- Tabs header -->
-                <div class="details-tabs">
-                    <button class="tab-link active">Overview</button>
-                    <button class="tab-link">Resume</button>
-                    <button class="tab-link">Skills Match</button>
-                    <button class="tab-link">AI Analysis</button>
-                    <button class="tab-link">Activity</button>
-                </div>
-
-                <!-- Details body content -->
-                <div class="details-scrollable-body">
-                    
-                    <!-- Contact Details card -->
-                    <div>
-                        <h4 style="font-size: 0.9rem; font-weight: 700; color: white; margin-bottom: 0.75rem;">Contact Information</h4>
-                        <div class="contact-info-grid">
-                            <div class="contact-item">
-                                ✉️ <span id="det-email">sk9966577@gmail.com</span>
-                            </div>
-                            <div class="contact-item">
-                                📞 <span id="det-phone">+91-9876543210</span>
-                            </div>
-                            <div class="contact-item">
-                                📍 Bengaluru, India
-                            </div>
-                            <div class="contact-item">
-                                🔗 <a href="#" target="_blank">LinkedIn Profile</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Key Skills pills -->
-                    <div>
-                        <h4 style="font-size: 0.9rem; font-weight: 700; color: white; margin-bottom: 0.5rem;">Key Skills</h4>
-                        <div class="skills-pills" id="det-skills-container"></div>
-                    </div>
-
-                    <!-- AI Reasoning -->
-                    <div>
-                        <div class="section-title">AI Reasoning (Why this score?)</div>
-                        <div class="reasoning-list-card" id="det-rationale-box"></div>
-                    </div>
-
-                    <!-- Missing requirements -->
-                    <div>
-                        <div class="section-title" style="color: var(--accent-danger);">Missing Requirements</div>
-                        <div class="reasoning-list-card not" id="det-missing-box"></div>
-                    </div>
-
-                    <!-- Experience text summary -->
-                    <div>
-                        <h4 style="font-size: 0.9rem; font-weight: 700; color: white; margin-bottom: 0.75rem;">Experience Summary</h4>
-                        <p id="det-resume-summary" style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;"></p>
+                
+                <div class="detail-pane" id="c-empty">
+                    <div class="empty-state">
+                        <svg width="64" height="64" fill="none" stroke="#d1d5db" viewBox="0 0 24 24" style="margin-bottom: 1rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+                        </svg>
+                        <h3>No Candidate Selected</h3>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Select a candidate from the list to view their AI analysis details.</p>
                     </div>
                 </div>
-
-                <!-- Footer action buttons -->
-                <div class="details-action-bar" id="det-actions-bar">
-                    <!-- Action buttons loaded dynamically -->
-                </div>
-            </div>
-            
-            <div class="details-pane" id="noDetailsSelected" style="display: flex; align-items: center; justify-content: center; text-align: center; color: var(--text-muted); height: 100%;">
-                <div>
-                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 1rem auto; opacity: 0.5;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
-                    </svg>
-                    <p style="font-size: 1rem;">Select a candidate from the list to review AI matching details and schedule interviews.</p>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Custom Scheduler Modal -->
-    <div id="schedulerModal" class="modal">
-        <div class="modal-content">
-            <h3 class="modal-title">Schedule Custom Interview</h3>
-            <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">Select date and time for <span id="modal-candidate-name" style="color: white; font-weight: 600;">Candidate</span>.</p>
-            
-            <input type="hidden" id="modal-candidate-id">
-            
-            <div class="form-group">
-                <label for="interview-time">Date & Time</label>
-                <input type="datetime-local" id="interview-time" required>
-            </div>
-            
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeScheduler()" style="padding: 0.5rem 1rem;">Cancel</button>
-                <button class="btn btn-primary" onclick="submitSchedule()" style="padding: 0.5rem 1rem;">Confirm Slot</button>
             </div>
         </div>
-    </div>
 
-    <!-- Interview Invite Modal -->
-    <div id="inviteModal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
-            <h3 class="modal-title">Compose Interview Invite</h3>
-            <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
-                Customize the interview details before sending to <span id="invite-candidate-name" style="color: white; font-weight: 600;">Candidate</span>.
-            </p>
-            
-            <input type="hidden" id="invite-candidate-id">
-            
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label for="invite-to">To</label>
-                <input type="email" id="invite-to" readonly style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(255,255,255,0.05); color: white;">
-            </div>
-            
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label for="invite-subject">Subject</label>
-                <input type="text" id="invite-subject" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(255,255,255,0.05); color: white;">
-            </div>
-            
-            <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label for="invite-message">Message Body</label>
-                <textarea id="invite-message" style="width: 100%; height: 180px; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background-color: rgba(255,255,255,0.05); color: white; resize: vertical; font-family: inherit; font-size: 0.875rem; line-height: 1.5;"></textarea>
-            </div>
-            
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeInviteModal()" style="padding: 0.5rem 1rem;">Cancel</button>
-                <button class="btn btn-primary" id="btn-confirm-send" onclick="submitInviteEmail()" style="padding: 0.5rem 1rem;">Send Email</button>
-            </div>
-        </div>
     </div>
 
     <script>
         const candidates = {{ candidates|tojson|safe if candidates else '[]' }};
-        let currentFilter = 'All';
-
-        // Calculate card statistics
-        function updateSummaryCards() {
-            const cCountEl = document.getElementById('c-count');
-            if (cCountEl) cCountEl.textContent = candidates.length;
-            if (!candidates.length) return;
-            let strongCount = 0;
-            let possibleCount = 0;
-            let notCount = 0;
-            let scheduledCount = 0;
-            let rejectedCount = 0;
-
-            candidates.forEach(c => {
-                if (c.tier === 'Strong Fit') strongCount++;
-                else if (c.tier === 'Possible Fit') possibleCount++;
-                else notCount++;
-
-                if (c.status === 'Interview Scheduled') scheduledCount++;
-                else if (c.status === 'Rejected') rejectedCount++;
-            });
-
-            if (document.getElementById('card-total')) document.getElementById('card-total').textContent = candidates.length;
-            if (document.getElementById('card-strong')) document.getElementById('card-strong').textContent = strongCount;
-            if (document.getElementById('card-possible')) document.getElementById('card-possible').textContent = possibleCount;
-            if (document.getElementById('card-not')) document.getElementById('card-not').textContent = notCount;
-            if (document.getElementById('card-scheduled')) document.getElementById('card-scheduled').textContent = scheduledCount;
-            if (document.getElementById('card-rejected')) document.getElementById('card-rejected').textContent = rejectedCount;
-        }
-
-        window.onload = function() {
-            updateSummaryCards();
-            // Automatically select first candidate if candidates exist
-            if (candidates.length > 0) {
+        const singleView = {{ 'true' if single_view else 'false' }};
+        
+        // Navigation
+        function switchTab(tabId) {
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.menu-item')[tabId === 'dashboard' ? 0 : 1].classList.add('active');
+            
+            document.getElementById('view-dashboard').style.display = tabId === 'dashboard' ? 'flex' : 'none';
+            document.getElementById('view-candidates').style.display = tabId === 'candidates' ? 'flex' : 'none';
+            
+            if(tabId === 'candidates' && candidates.length > 0 && document.getElementById('c-empty').style.display !== 'none') {
                 selectCandidate(candidates[0].id);
             }
         }
 
-        function setFilter(filterType, element) {
-            currentFilter = filterType;
-            document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
-            element.classList.add('active');
-            filterAndSortCandidates();
+        // File upload UI
+        function updateFileName(input, textId) {
+            const textEl = document.getElementById(textId);
+            if (input.files.length > 1) {
+                textEl.innerHTML = `<strong>${input.files.length} resumes selected</strong>`;
+            } else if (input.files.length === 1) {
+                textEl.innerHTML = `Selected: <strong>${input.files[0].name}</strong>`;
+            } else {
+                textEl.innerHTML = `<span>Choose files</span> or drag them here`;
+            }
         }
 
-        function filterAndSortCandidates() {
-            const query = document.getElementById('candidateSearch') ? document.getElementById('candidateSearch').value.toLowerCase() : '';
-            const tierVal = document.getElementById('tierFilter') ? document.getElementById('tierFilter').value : 'All';
-            const statusVal = document.getElementById('statusFilter') ? document.getElementById('statusFilter').value : 'All';
-            const itemsContainer = document.getElementById('candidatesListContainer');
+        // Dashboard Stats
+        function updateStats() {
+            document.getElementById('count-total').textContent = candidates.length;
+            if(!candidates.length) return;
             
-            if (!itemsContainer) return;
-
-            const items = Array.from(itemsContainer.querySelectorAll('.candidate-item'));
-
-            const sortVal = document.getElementById('scoreSort') ? document.getElementById('scoreSort').value : 'desc';
-
-            // Sort logic
-            items.sort((a, b) => {
-                const scoreA = parseInt(a.getAttribute('data-score')) || 0;
-                const scoreB = parseInt(b.getAttribute('data-score')) || 0;
-                return sortVal === 'desc' ? scoreB - scoreA : scoreA - scoreB;
+            let strong = 0, possible = 0, not = 0, sched = 0;
+            candidates.forEach(c => {
+                if(c.tier === 'Strong Fit') strong++;
+                else if(c.tier === 'Possible Fit') possible++;
+                else not++;
+                if(c.status === 'Interview Scheduled') sched++;
             });
+            
+            document.getElementById('count-strong').textContent = strong;
+            document.getElementById('count-possible').textContent = possible;
+            document.getElementById('count-not').textContent = not;
+            document.getElementById('count-scheduled').textContent = sched;
+        }
 
-            items.forEach(item => {
-                const name = item.getAttribute('data-name').toLowerCase();
-                const tier = item.getAttribute('data-tier');
-                const status = item.getAttribute('data-status');
-
-                let matchFilter = true;
-
-                // Tab Filter
-                if (currentFilter !== 'All') {
-                    if (currentFilter === 'Strong Fit' && tier !== 'Strong Fit') matchFilter = false;
-                    else if (currentFilter === 'Possible Fit' && tier !== 'Possible Fit') matchFilter = false;
-                    else if (currentFilter === 'Not Fit' && tier !== 'Not Fit') matchFilter = false;
-                    else if (currentFilter === 'Interview Scheduled' && status !== 'Interview Scheduled') matchFilter = false;
-                    else if (currentFilter === 'Rejected' && status !== 'Rejected') matchFilter = false;
-                }
-
-                // Dropdown Tier Filter
-                if (tierVal !== 'All' && tier !== tierVal) matchFilter = false;
-
-                // Dropdown Status Filter
-                if (statusVal !== 'All' && status !== statusVal) matchFilter = false;
-
-                // Search Query
-                const matchQuery = name.includes(query);
-
-                if (matchFilter && matchQuery) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-
-                // Re-append sorted elements
-                itemsContainer.appendChild(item);
+        // Render Candidate List
+        function filterList() {
+            const list = document.getElementById('c-list');
+            const filter = document.getElementById('tierFilter').value;
+            list.innerHTML = '';
+            
+            candidates.forEach(c => {
+                if(filter !== 'All' && c.tier !== filter) return;
+                
+                let badgeClass = c.tier === 'Strong Fit' ? 'badge-strong' : (c.tier === 'Possible Fit' ? 'badge-possible' : 'badge-not');
+                
+                const div = document.createElement('div');
+                div.className = 'candidate-item';
+                div.id = `item-${c.id}`;
+                div.onclick = () => selectCandidate(c.id);
+                div.innerHTML = `
+                    <div class="c-info">
+                        <div class="candidate-initials">${c.name.substring(0,2).toUpperCase()}</div>
+                        <div>
+                            <div class="c-name">${c.name}</div>
+                            <div class="c-meta">${c.email}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="badge ${badgeClass}">${c.tier}</span>
+                        <div class="c-score">${c.score}</div>
+                    </div>
+                `;
+                list.appendChild(div);
             });
         }
 
-        // Details Panel rendering
-        let activeCandidateId = null;
-
-        function selectCandidate(candidateId) {
-            const c = candidates.find(item => item.id === candidateId);
-            if (!c) return;
-
-            activeCandidateId = candidateId;
-
-            // Highlight in list
-            document.querySelectorAll('.candidate-item').forEach(item => item.classList.remove('active'));
-            const selectedItem = document.getElementById(`item-${candidateId}`);
-            if (selectedItem) selectedItem.classList.add('active');
-
-            // Show Pane
-            document.getElementById('noDetailsSelected').style.display = 'none';
-            document.getElementById('detailsPane').style.display = 'flex';
-
-            // Bind values
+        function selectCandidate(id) {
+            document.querySelectorAll('.candidate-item').forEach(el => el.classList.remove('active'));
+            const item = document.getElementById(`item-${id}`);
+            if(item) item.classList.add('active');
+            
+            const c = candidates.find(x => x.id === id);
+            if(!c) return;
+            
+            document.getElementById('c-empty').style.display = 'none';
+            document.getElementById('c-detail').style.display = 'flex';
+            
             document.getElementById('det-name').textContent = c.name;
-            document.getElementById('det-avatar').textContent = c.name ? c.name.substring(0, 2).toUpperCase() : 'SK';
-            document.getElementById('det-title-meta').textContent = `Backend Developer • ${c.score >= 85 ? 'Senior' : 'Mid'} Level`;
-
-            // Fit badge
-            const fitBadge = document.getElementById('det-tier-badge');
-            fitBadge.textContent = c.tier;
-            fitBadge.className = 'badge ' + (c.tier === 'Strong Fit' ? 'badge-strong' : c.tier === 'Possible Fit' ? 'badge-possible' : 'badge-not');
-
-            // Score circle
-            document.getElementById('det-score-val').textContent = c.score + '%';
-            document.getElementById('det-circle-text').textContent = c.score + '%';
-            const progressStroke = document.getElementById('det-circle-stroke');
-            const circumference = 163; // 2 * pi * 26
-            const offset = circumference - (c.score / 100) * circumference;
-            progressStroke.setAttribute('stroke-dashoffset', offset);
-            progressStroke.style.stroke = c.score >= 85 ? 'var(--accent-success)' : c.score >= 60 ? 'var(--accent-warning)' : 'var(--accent-danger)';
-
-            // Contact
             document.getElementById('det-email').textContent = c.email;
-            document.getElementById('det-phone').textContent = c.phone || 'N/A';
-
-            // Skills pills
-            const skillsContainer = document.getElementById('det-skills-container');
-            skillsContainer.innerHTML = '';
-            c.strengths.forEach(skill => {
-                const span = document.createElement('span');
-                span.className = 'skill-pill';
-                span.textContent = skill;
-                skillsContainer.appendChild(span);
+            document.getElementById('det-score').textContent = c.score;
+            
+            const badge = document.getElementById('det-badge');
+            badge.textContent = c.tier;
+            badge.className = 'badge ' + (c.tier === 'Strong Fit' ? 'badge-strong' : (c.tier === 'Possible Fit' ? 'badge-possible' : 'badge-not'));
+            
+            // Skills
+            const skillsDiv = document.getElementById('det-skills');
+            skillsDiv.innerHTML = '';
+            (c.strengths || []).forEach(s => {
+                skillsDiv.innerHTML += `<span class="skill-tag">${s}</span>`;
             });
-            if (!c.strengths.length) {
-                skillsContainer.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">No skills loaded</span>';
-            }
-
-            // Rationale (green lines)
-            const rationaleBox = document.getElementById('det-rationale-box');
-            rationaleBox.innerHTML = '';
-            const lines = c.rationale.split('\n');
+            if(skillsDiv.innerHTML === '') skillsDiv.innerHTML = '<span style="color:var(--text-muted);font-size:0.85rem;">No skills found.</span>';
+            
+            // Rationale
+            const goodBox = document.getElementById('det-good');
+            const badBox = document.getElementById('det-bad');
+            goodBox.innerHTML = ''; badBox.innerHTML = '';
+            
+            const lines = (c.rationale || '').split('\n');
             lines.forEach(line => {
-                if (line.trim().startsWith('✓')) {
-                    const div = document.createElement('div');
-                    div.className = 'reasoning-line';
-                    div.innerHTML = `🟢 ${line.replace('✓', '').trim()}`;
-                    rationaleBox.appendChild(div);
+                if(line.includes('✓')) {
+                    goodBox.innerHTML += `<div class="reasoning-line"><span style="color:#10b981;font-weight:bold;">✓</span> ${line.replace('✓','').trim()}</div>`;
+                } else if (line.includes('✗')) {
+                    badBox.innerHTML += `<div class="reasoning-line"><span style="color:#ef4444;font-weight:bold;">✗</span> ${line.replace('✗','').trim()}</div>`;
                 }
             });
-            if (rationaleBox.innerHTML === '') {
-                rationaleBox.innerHTML = `<div class="reasoning-line">No met requirements noted.</div>`;
+            if(!goodBox.innerHTML) goodBox.innerHTML = '<div class="reasoning-line">No matched details provided.</div>';
+            if(!badBox.innerHTML) badBox.innerHTML = '<div class="reasoning-line">No missing requirements.</div>';
+        }
+
+        window.onload = () => {
+            updateStats();
+            filterList();
+            if (singleView) {
+                switchTab('candidates');
+            } else {
+                switchTab('dashboard');
             }
-
-            // Missing Requirements (red lines)
-            const missingBox = document.getElementById('det-missing-box');
-            missingBox.innerHTML = '';
-            lines.forEach(line => {
-                if (line.trim().startsWith('✗')) {
-                    const div = document.createElement('div');
-                    div.className = 'reasoning-line';
-                    div.innerHTML = `🔴 ${line.replace('✗', '').trim()}`;
-                    missingBox.appendChild(div);
-                }
-            });
-            if (missingBox.innerHTML === '') {
-                missingBox.innerHTML = `<div class="reasoning-line">No missing requirements noted.</div>`;
-            }
-
-            // Summary Text
-            document.getElementById('det-resume-summary').textContent = c.resume_text || 'No resume text available.';
-
-            // Dynamic Action bar buttons
-            const actionsBar = document.getElementById('det-actions-bar');
-            actionsBar.innerHTML = '';
-
-            const mailBtn = document.createElement('button');
-            mailBtn.className = 'gmail-btn';
-            mailBtn.innerHTML = `📬 Send Interview Invite`;
-            mailBtn.onclick = function() {
-                openInviteModal(c.id);
-            };
-            actionsBar.appendChild(mailBtn);
-
-            const scheduleBtn = document.createElement('button');
-            scheduleBtn.className = 'schedule-btn';
-            scheduleBtn.style.backgroundColor = 'transparent';
-            scheduleBtn.style.border = '1px solid var(--border-color)';
-            scheduleBtn.style.color = 'white';
-            scheduleBtn.innerHTML = `📅 Schedule Interview`;
-            scheduleBtn.onclick = function() {
-                openScheduler(c.id, c.name);
-            };
-            actionsBar.appendChild(scheduleBtn);
-        }
-
-        // Scheduler Functions
-        function openScheduler(candidateId, candidateName) {
-            document.getElementById('modal-candidate-id').value = candidateId;
-            document.getElementById('modal-candidate-name').textContent = candidateName;
-            document.getElementById('schedulerModal').style.display = 'flex';
-        }
-
-        function closeScheduler() {
-            document.getElementById('schedulerModal').style.display = 'none';
-        }
-
-        function submitSchedule() {
-            const candidateId = document.getElementById('modal-candidate-id').value;
-            const timeVal = document.getElementById('interview-time').value;
-
-            if (!timeVal) {
-                alert('Please select a date and time.');
-                return;
-            }
-
-            const formattedTime = new Date(timeVal).toLocaleString([], {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-
-            fetch('/schedule_interview', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: candidateId, time: formattedTime })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    const c = candidates.find(item => item.id === candidateId);
-                    if (c) {
-                        c.status = 'Interview Scheduled';
-                        c.interview_time = formattedTime;
-                    }
-                    
-                    // Update Item row status in DOM list
-                    const selectedItem = document.getElementById(`item-${candidateId}`);
-                    if (selectedItem) {
-                        selectedItem.setAttribute('data-status', 'Interview Scheduled');
-                        const statusBadge = selectedItem.querySelector('.status-badge');
-                        if (statusBadge) {
-                            statusBadge.className = 'status-badge scheduled';
-                            statusBadge.textContent = 'Interview Scheduled';
-                        }
-                    }
-                    
-                    updateSummaryCards();
-                    selectCandidate(candidateId);
-                    closeScheduler();
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Failed to schedule.');
-            });
-        }
-
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.style.position = 'fixed';
-            toast.style.top = '20px';
-            toast.style.right = '20px';
-            toast.style.padding = '12px 24px';
-            toast.style.borderRadius = '8px';
-            toast.style.backgroundColor = type === 'success' ? '#10b981' : '#ef4444';
-            toast.style.color = '#ffffff';
-            toast.style.fontWeight = '600';
-            toast.style.fontSize = '0.9rem';
-            toast.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.5)';
-            toast.style.zIndex = '9999';
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-            toast.style.transform = 'translateY(-10px)';
-            toast.textContent = message;
-
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.opacity = '1';
-                toast.style.transform = 'translateY(0)';
-            }, 10);
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(-10px)';
-                setTimeout(() => {
-                    document.body.removeChild(toast);
-                }, 300);
-            }, 3000);
-        }
-
-        function openInviteModal(candidateId) {
-            const c = candidates.find(item => item.id === candidateId);
-            if (!c) return;
-            
-            document.getElementById('invite-candidate-id').value = candidateId;
-            document.getElementById('invite-candidate-name').textContent = c.name;
-            document.getElementById('invite-to').value = c.email || '';
-            document.getElementById('invite-subject').value = `Interview Invitation: Backend Developer - ScreenSmart`;
-            
-            const defaultMsg = `Dear ${c.name},\n\nThank you for your application for the Backend Developer position. We reviewed your resume, and your experience aligns strongly with our Job Description.\n\nWe would like to invite you for an interview.\n\nProposed Slots:\n${c.proposed_slots && c.proposed_slots.length ? c.proposed_slots.map(s => '📅 ' + s).join('\n') : '- Monday 10:00 AM\n- Tuesday 02:00 PM'}\n\nBest regards,\nRecruitment Team\nScreenSmart Suite`;
-            
-            document.getElementById('invite-message').value = defaultMsg;
-            document.getElementById('inviteModal').style.display = 'flex';
-        }
-
-        function closeInviteModal() {
-            document.getElementById('inviteModal').style.display = 'none';
-        }
-
-        function submitInviteEmail() {
-            const candidateId = document.getElementById('invite-candidate-id').value;
-            const subject = document.getElementById('invite-subject').value;
-            const body = document.getElementById('invite-message').value;
-            const sendBtn = document.getElementById('btn-confirm-send');
-            
-            const c = candidates.find(item => item.id === candidateId);
-            if (!c) {
-                console.error('Email failed: Undefined Variable');
-                showToast('Email failed: Undefined Variable', 'error');
-                return;
-            }
-
-            if (sendBtn) {
-                sendBtn.disabled = true;
-                sendBtn.innerHTML = `⏳ Sending...`;
-            }
-
-            fetch('/send_invite', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: candidateId, subject: subject, body: body })
-            })
-            .then(res => {
-                if (!res.ok) {
-                    return res.json().then(errData => {
-                        throw new Error(errData.error || 'API Connection Failed');
-                    });
-                }
-                return res.json();
-            })
-            .then(data => {
-                if (sendBtn) {
-                    sendBtn.disabled = false;
-                    sendBtn.innerHTML = `Send Email`;
-                }
-                if (data.success) {
-                    c.status = 'Interview Sent';
-                    const selectedItem = document.getElementById(`item-${candidateId}`);
-                    if (selectedItem) {
-                        selectedItem.setAttribute('data-status', 'Interview Sent');
-                        const statusBadge = selectedItem.querySelector('.status-badge');
-                        if (statusBadge) {
-                            statusBadge.className = 'status-badge sent';
-                            statusBadge.textContent = 'Interview Sent';
-                        }
-                    }
-                    updateSummaryCards();
-                    selectCandidate(candidateId);
-                    console.log(`Success: Email sent to ${c.email}`);
-                    showToast(`Success: Email sent to ${c.email}`, 'success');
-                    closeInviteModal();
-                } else {
-                    console.error(`Email failed: ${data.error || 'Unknown Error'}`);
-                    showToast(`Email failed: ${data.error || 'Unknown Error'}`, 'error');
-                }
-            })
-            .catch(err => {
-                if (sendBtn) {
-                    sendBtn.disabled = false;
-                    sendBtn.innerHTML = `Send Email`;
-                }
-                console.error(`Email failed: ${err.message || err}`);
-                showToast(`Email failed: ${err.message || err}`, 'error');
-            });
-        }
-
-
-
-        window.onclick = function(event) {
-            const schedulerModal = document.getElementById('schedulerModal');
-            if (event.target == schedulerModal) {
-                closeScheduler();
-            }
-        }
+        };
     </script>
 </body>
 </html>

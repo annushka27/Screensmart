@@ -453,5 +453,58 @@
         "interview_time": "",
         "proposed_slots": [],
         "resume_text": "Anushka Gupta\nEmail: intecher27@gmail.com\nPhone: +91 98765 43210\nLocation: Mathura, India\nProfessional Summary\nMotivated B.Tech CSE (AI & Data Science) student with skills in Python, Flask, SQL, Machine\nLearning, HTML/CSS, JavaScript and REST APIs.\nEducation\nB.Tech CSE (AI & Data Science), GLA University (Expected Graduation)\nSkills\nPython, Flask, SQL, Machine Learning, HTML, CSS, JavaScript, Git, REST APIs, Pandas, NumPy\nProjects\nCredit Card Fraud Detection; ScreenSmart AI Resume Screening; School Planner Web App\n"
+    },
+    {
+        "id": "b36bc36c-d38f-4e9d-850a-aca611cefdc9",
+        "name": "Supriya Kumari",
+        "email": "sk9986577@gmail.com",
+        "phone": "+91-9876543210",
+        "score": 98,
+        "tier": "Strong Fit",
+        "strengths": [
+            "4 years of backend development experience",
+            "Strong hold on Python and Django",
+            "AWS Certified Developer \u2013 Associate certification",
+            "PostgreSQL database optimization"
+        ],
+        "missing_requirements": [],
+        "rationale": "\u2713 4 years of backend development experience (meets the 3-year minimum)\n\u2713 Strong hold on Python and Django (developed REST APIs at TechNova Solutions)\n\u2713 AWS Certified Developer \u2013 Associate certification (mandatory requirement met)\n\u2713 Active experience with PostgreSQL databases (optimized queries by 30%)",
+        "status": "Interview Sent",
+        "interview_time": "",
+        "proposed_slots": [
+            "Wed, Jul 22, 2026 at 10:00 AM",
+            "Thu, Jul 23, 2026 at 02:00 PM",
+            "Fri, Jul 24, 2026 at 04:00 PM"
+        ],
+        "resume_text": "Supriya Kumari\nBackend Developer\nEmail: sk9986577@gmail.com | Phone: +91-9876543210 | Bengaluru, India\nProfessional Summary\nBackend Developer with 4 years of experience building scalable web applications using Python,\nDjango, PostgreSQL, and AWS. Experienced in REST APIs, database optimization, deployment,\nand cloud-native development.\nSkills\nPython, Django, Django REST Framework, PostgreSQL, AWS, Git, Docker, Linux\nExperience\nBackend Developer, TechNova Solutions (2022\u2013Present)\n- Developed REST APIs using Django REST Framework.\n- Optimized PostgreSQL queries improving performance by 30%.\n- Deployed applications on AWS EC2, RDS, S3 and CI/CD pipelines.\nCertifications\nAWS Certified Developer \u2013 Associate\nEducation\nB.Tech in Computer Science, XYZ University (2022)\n"
+    },
+    {
+        "id": "41649ceb-29b3-43ad-8171-c8211c0222bf",
+        "name": "Anushka Gupta",
+        "email": "dwaintyy27@gmail.com",
+        "phone": "Not Provided",
+        "score": 92,
+        "tier": "Strong Fit",
+        "strengths": [
+            "Python",
+            "Django",
+            "REST APIs",
+            "SQL & PostgreSQL",
+            "Git",
+            "AWS Basics",
+            "B.Tech CSE (AI & Data Science)"
+        ],
+        "missing_requirements": [
+            "Completed degree (Currently pursuing 3rd year)"
+        ],
+        "rationale": "\u2713 Pursuing B.Tech CSE (AI & Data Science) matches the required qualification\n\u2713 Has Python and Django skills\n\u2713 Has REST APIs, SQL, and PostgreSQL skills\n\u2713 Has Git and AWS Basics (preferred skill) listed\n\u2717 Currently pursuing 3rd year (not yet graduated/completed degree)",
+        "status": "Interview Sent",
+        "interview_time": "",
+        "proposed_slots": [
+            "Wed, Jul 22, 2026 at 10:00 AM",
+            "Thu, Jul 23, 2026 at 02:00 PM",
+            "Fri, Jul 24, 2026 at 04:00 PM"
+        ],
+        "resume_text": "Anushka Gupta\nEmail: dwaintyy27@gmail.com\nObjective\nMotivated B.Tech CSE (AI & Data Science) 3rd-year student seeking a Backend Developer role.\nEducation\nB.Tech CSE (AI & Data Science), GLA University (Pursuing)\nSkills\nPython, Django, Java, SQL, PostgreSQL, Git, REST APIs, AWS Basics\nProjects\nCredit Card Fraud Detection using ML.\nAI Resume Screening & JD Matching workflow using n8n.\n"
     }
 ]
