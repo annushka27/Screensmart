@@ -104,6 +104,33 @@
         .tech-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: #111827; }
         .tech-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
 
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero-section { grid-template-columns: 1fr; gap: 3rem; }
+            .steps-grid { grid-template-columns: repeat(2, 1fr); }
+            .tech-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow: auto; }
+            .sidebar { width: 100%; height: auto; flex-direction: row; align-items: center; justify-content: space-between; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; }
+            .sidebar-brand { margin-bottom: 0; }
+            .sidebar-menu { flex-direction: row; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; margin-top: 1rem; width: 100%; }
+            .menu-item { padding: 0.5rem 1rem; }
+            .footer-brand { display: none; }
+            
+            .main-panel { height: auto; padding: 1.5rem; overflow-y: visible; }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .hero-content h1 { font-size: 2rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .steps-grid { grid-template-columns: 1fr; }
+            .tech-grid { grid-template-columns: 1fr; }
+            .page-header { align-items: stretch; }
+            .btn-gradient { width: 100%; text-align: center; }
+            .hero-card { padding: 1.5rem; }
+        }
     </style>
 </head>
 <body>
