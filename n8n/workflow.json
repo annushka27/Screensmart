@@ -1,89 +1,583 @@
 {
-  "name": "ScreenSmart Post-Analysis Automation",
+  "name": "Resume Screening via Webhook (Gemini)",
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "post-analysis",
-        "responseMode": "lastNode",
-        "options": {}
+        "path": "resume-screening",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryPropertyName": "data"
+        }
       },
-      "id": "webhook-trigger-node",
-      "name": "Webhook Trigger",
+      "id": "6679018d-eebd-4c89-ac4e-6cf022fcd2e6",
+      "name": "Resume Upload Webhook",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1.1,
+      "typeVersion": 2.1,
       "position": [
-        100,
-        300
+        0,
+        288
+      ],
+      "webhookId": "5b5e23d6-a466-4ee4-ad9f-0196757fad80"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate the incoming request and split every uploaded PDF into its\n// own item so each resume is processed independently.\nconst item = $input.first();\nconst body = (item.json && item.json.body) ? item.json.body : {};\nconst binary = item.binary || {};\n\nconst jd = String(body.job_description || body.jd || '').trim();\nconst recruiterName = String(body.recruiter_name || '').trim();\nconst recruiterEmail = String(body.recruiter_email || '').trim();\n\nconst fileKeys = Object.keys(binary);\n\n// --- Validation ---\nconst errors = [];\nif (!jd) errors.push('job_description is required');\nif (fileKeys.length === 0) errors.push('at least one PDF resume is required');\nif (errors.length > 0) {\n  return [{ json: { valid: false, error: errors.join('; ') } }];\n}\n\n// --- Split: one item per resume, binary normalised to 'data' ---\nconst out = [];\nlet idx = 0;\nfor (const key of fileKeys) {\n  const b = binary[key];\n  out.push({\n    json: {\n      valid: true,\n      jd_text: jd,\n      recruiter_name: recruiterName,\n      recruiter_email: recruiterEmail,\n      resume_index: idx,\n      file_name: (b && b.fileName) ? b.fileName : key,\n    },\n    binary: { data: b },\n  });\n  idx++;\n}\nreturn out;"
+      },
+      "id": "b8fc2fee-67f6-4f10-b1d5-7c9ab82dd823",
+      "name": "Validate & Split Resumes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        288
       ]
     },
     {
       "parameters": {
         "conditions": {
-          "string": [
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
             {
-              "value1": "={{ $json.body.tier }}",
-              "value2": "Strong Fit"
+              "id": "valid",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
             }
-          ]
-        }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
       },
-      "id": "check-tier-node",
-      "name": "Is Strong Fit?",
+      "id": "e74d95a6-998a-4696-be9e-25ae6432e126",
+      "name": "Request Valid?",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
+      "typeVersion": 2.3,
       "position": [
-        350,
-        300
+        448,
+        288
       ]
     },
     {
       "parameters": {
-        "sendTo": "={{ $json.body.email }}",
-        "subject": "=Interview Invitation: Backend Developer - ScreenSmart",
-        "message": "=Hi {{ $json.body.name }},\n\nCongratulations! We reviewed your resume, and your experience aligns strongly with our Job Description.\n\nWe would like to invite you for an interview. Please confirm your preferred slot:\n- Monday 10 AM\n- Tuesday 2 PM\n\nBest regards,\nRecruitment Team",
+        "operation": "pdf",
+        "options": {
+          "joinPages": true,
+          "keepSource": "json"
+        }
+      },
+      "id": "e5b0b740-fcd2-42eb-9acf-e48b5a06e2b4",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        192
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a technical recruiter. Evaluate the candidate resume against the job description and return your assessment as structured JSON.\n\n=== JOB DESCRIPTION ===\n{{ $json.jd_text }}\n\n=== CANDIDATE RESUME ===\n{{ $json.text }}\n\nRules:\n- Extract candidate_name and email (empty string if no email).\n- Give score 0-100 for JD match.\n- tier is exactly one of: \"Strong Fit\", \"Possible Fit\", \"Not Fit\".\n- List matched_skills and missing_skills against the JD.\n- reasoning must cite exactly what matched or is missing.\n- recommendation is a short next step for the recruiter.",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "id": "136807eb-c47a-44f4-9d22-b6ebd7041a83",
+      "name": "Analyze Resume",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        896,
+        192
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
         "options": {}
       },
-      "id": "gmail-send-node",
-      "name": "Gmail (Apps Script Trigger)",
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
+      "id": "7e947035-8eed-4198-abcd-d3a21813c5f2",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
       "position": [
-        600,
-        200
+        912,
+        416
       ],
       "credentials": {
-        "gmailOAuth2": {
-          "id": "gmail-credential-id",
-          "name": "Gmail Account"
+        "googlePalmApi": {
+          "id": null,
+          "name": "n8n Connect",
+          "__aiGatewayManaged": true
         }
       }
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "http://localhost:5000/schedule_interview",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "{\n  \"id\": \"{{ $json.body.id }}\",\n  \"time\": \"{{ $json.body.proposed_slots[0] }}\"\n}",
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"candidate_name\": { \"type\": \"string\", \"description\": \"Candidate full name from the resume.\" },\n    \"email\": { \"type\": \"string\", \"description\": \"Candidate email, or empty string if none.\" },\n    \"score\": { \"type\": \"number\", \"description\": \"Match score 0-100 vs the job description.\" },\n    \"tier\": { \"type\": \"string\", \"enum\": [\"Strong Fit\", \"Possible Fit\", \"Not Fit\"], \"description\": \"Classification vs the JD.\" },\n    \"matched_skills\": { \"type\": \"array\", \"items\": { \"type\": \"string\" }, \"description\": \"JD requirements the candidate meets.\" },\n    \"missing_skills\": { \"type\": \"array\", \"items\": { \"type\": \"string\" }, \"description\": \"JD requirements the candidate lacks.\" },\n    \"reasoning\": { \"type\": \"string\", \"description\": \"Detailed rationale of what matched or is missing.\" },\n    \"recommendation\": { \"type\": \"string\", \"description\": \"Short next-step recommendation for the recruiter.\" }\n  },\n  \"required\": [\"candidate_name\", \"email\", \"score\", \"tier\", \"matched_skills\", \"missing_skills\", \"reasoning\", \"recommendation\"]\n}"
+      },
+      "id": "ea1ed805-6932-4379-8c58-09f800a36c0f",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalise every AI result, derive status + recommendation, and flag\n// duplicate candidates (same email seen earlier in this batch).\nconst items = $input.all();\nconst meta = $('Validate & Split Resumes').all();\nconst seen = {};\nconst results = [];\nfor (let i = 0; i < items.length; i++) {\n  const o = items[i].json.output || {};\n  const m = (meta[i] && meta[i].json) ? meta[i].json : {};\n  const email = String(o.email || '').trim().toLowerCase();\n  const tier = String(o.tier || 'Not Fit');\n\n  let status = 'Rejected';\n  if (tier === 'Strong Fit') status = 'Invited';\n  else if (tier === 'Possible Fit') status = 'Review Required';\n\n  const isDup = email !== '' && seen[email] === true;\n  if (email !== '') seen[email] = true;\n\n  const scoreNum = typeof o.score === 'number' ? o.score : (Number(o.score) || 0);\n\n  results.push({ json: {\n    candidate_name: o.candidate_name || 'Unknown',\n    email: o.email || '',\n    score: scoreNum,\n    tier: tier,\n    matched_skills: Array.isArray(o.matched_skills) ? o.matched_skills : [],\n    missing_skills: Array.isArray(o.missing_skills) ? o.missing_skills : [],\n    reasoning: o.reasoning || '',\n    recommendation: o.recommendation || '',\n    status: isDup ? 'Duplicate' : status,\n    is_duplicate: isDup,\n    is_strong_fit: tier === 'Strong Fit' && !isDup,\n    file_name: m.file_name || '',\n    recruiter_name: m.recruiter_name || '',\n    recruiter_email: m.recruiter_email || '',\n    screened_at: new Date().toISOString(),\n  } });\n}\nreturn results;"
+      },
+      "id": "06dd7cb8-db24-4d2f-9b1c-b77f5953f1a6",
+      "name": "Build Result & Dedup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15rE2w5oesIJzBxXnJOGg3P-WvGDXFd40NGFELFYjWHk",
+          "mode": "list",
+          "cachedResultName": "Resume Screening ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15rE2w5oesIJzBxXnJOGg3P-WvGDXFd40NGFELFYjWHk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $json.email }}",
+            "Tier": "={{ $json.tier }}",
+            "Rationale": "={{ $json.reasoning }}",
+            "Candidate  Name": "={{ $json.candidate_name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Candidate  Name",
+              "displayName": "Candidate  Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tier",
+              "displayName": "Tier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Rationale",
+              "displayName": "Rationale",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
         "options": {}
       },
-      "id": "update-dashboard-node",
-      "name": "Update Dashboard Status",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "id": "eba0d7a9-a0d2-4c83-baca-0d4e935d2228",
+      "name": "Log to Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
       "position": [
-        850,
-        300
+        1472,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SH4vsu8bmqPD0cT0",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build a single clean JSON payload for the Flask website.\nconst rows = $('Build Result & Dedup').all().map(i => i.json);\nconst candidates = rows.map(r => ({\n  candidate_name: r.candidate_name,\n  email: r.email,\n  score: r.score,\n  tier: r.tier,\n  matched_skills: r.matched_skills,\n  missing_skills: r.missing_skills,\n  reasoning: r.reasoning,\n  recommendation: r.recommendation,\n  status: r.status,\n  invited: r.is_strong_fit,\n  is_duplicate: r.is_duplicate,\n}));\nconst summary = {\n  total: candidates.length,\n  strong_fit: candidates.filter(c => c.tier === 'Strong Fit').length,\n  possible_fit: candidates.filter(c => c.tier === 'Possible Fit').length,\n  not_fit: candidates.filter(c => c.tier === 'Not Fit').length,\n  duplicates: candidates.filter(c => c.is_duplicate).length,\n};\nreturn [{ json: { status: 'success', summary, candidates } }];"
+      },
+      "id": "d274d962-0040-45a7-90e0-9bb303d0f4db",
+      "name": "Aggregate Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1696,
+        0
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "a60a5ab9-b352-4b59-a310-daf476917343",
+      "name": "Respond to Website",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1920,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "strong",
+              "leftValue": "={{ $json.is_strong_fit }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4f3a79fd-6517-452b-b3c4-724e2654cdfe",
+      "name": "Is Strong Fit?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1472,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "=Interview Invitation - {{ $json.candidate_name }}",
+        "message": "=<div style=\"font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:25px;border:1px solid #e5e5e5;border-radius:10px;\"><h2 style=\"color:#1a73e8;\">Interview Invitation</h2><p>Hi <b>{{ $json.candidate_name }}</b>,</p><p>Congratulations! Based on our AI resume screening, we would like to invite you for an interview.</p><hr><h3>Interview Details</h3><p><b>Date &amp; Time:</b> {{ $now.plus({ days: 3 }).set({ hour: 10, minute: 0 }).toFormat(\"cccc, dd LLL yyyy, hh:mm a\") }} IST</p><p><b>Platform:</b> Google Meet (link included in the calendar invitation)</p><hr><p>A Google Calendar invitation has been sent. Please accept it to confirm your attendance, or reply to this email to propose another slot.</p><br><p>Best Regards,<br><b>Recruitment Team</b></p></div>",
+        "options": {
+          "appendAttribution": false,
+          "replyTo": "=supriyakumari140906@gmail.com"
+        }
+      },
+      "id": "c1f4799d-789c-424b-a722-91473cd80638",
+      "name": "Send Interview Invite",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1696,
+        192
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "webhookId": "3c16a45e-6db5-4922-9434-ef51467a61f5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "jv6LtLey6S0bQm76",
+          "name": "Gmail account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "mode": "id",
+          "value": "supriyakumari140906@gmail.com"
+        },
+        "start": "={{ $now.plus({ days: 3 }).set({ hour: 10, minute: 0, second: 0, millisecond: 0 }).toISO() }}",
+        "end": "={{ $now.plus({ days: 3 }).set({ hour: 10, minute: 30, second: 0, millisecond: 0 }).toISO() }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $json.email }}\n"
+          ],
+          "conferenceDataUi": {
+            "conferenceDataValues": {
+              "conferenceSolution": "Google Meet"
+            }
+          },
+          "description": "=Candidate: {{ $json.candidate_name }}\nEmail: {{ $json.email }}\nScore: {{ $json.score }}\nTier: {{ $json.tier }}\nMatched Skills: {{ $json.matched_skills.join(\", \") }}\nMissing Skills: {{ $json.missing_skills.join(\", \") }}\nRationale: {{ $json.reasoning }}",
+          "sendUpdates": "all",
+          "summary": "=Interview with {{ $json.candidate_name }}"
+        }
+      },
+      "id": "a2370804-5fdd-4bef-9e4c-8ad1eecb3174",
+      "name": "Create Interview Event",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1696,
+        384
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "dLBv8bLMmaeYKITF",
+          "name": "Google Calendar account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: \"error\", message: $json.error }) }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "618c7ea5-9089-4b3a-a6e7-5997fa0e4f70",
+      "name": "Respond Validation Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## AI Resume Screening & Interview Scheduling Copilot\nPOST multipart/form-data to /webhook/resume-screening with one or more PDF resumes, `job_description`, `recruiter_name`, and `recruiter_email`. Returns one JSON payload with per-candidate results.",
+        "height": 140,
+        "width": 520,
+        "color": 4
+      },
+      "id": "4e3c829d-fc92-403b-980e-4f774132d6ec",
+      "name": "Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Validates the request (JD + at least one PDF) and splits every uploaded resume into its own item. Invalid requests get a 400 JSON response.",
+        "height": 200,
+        "width": 300
+      },
+      "id": "4583b3a7-39a9-4596-aac8-60762e6e5ba7",
+      "name": "Validation & Fan-out",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        336,
+        -384
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Gemini scores each resume vs the JD and returns strict structured JSON (name, email, score, tier, skills, rationale, recommendation).",
+        "height": 200,
+        "width": 280
+      },
+      "id": "1f304c84-4b4d-4c00-8f46-e7f8a352f824",
+      "name": "AI Analysis",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Every candidate is logged to Google Sheets with a per-tier status (Invited / Review Required / Rejected). Strong Fits also get an interview email + Google Calendar event with a Meet link. Results are aggregated into one response.",
+        "height": 220,
+        "width": 420,
+        "color": 5
+      },
+      "id": "e4c0ed84-36cf-4a7c-81ed-db636c532bbf",
+      "name": "Routing, Logging & Response",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -48
       ]
     }
   ],
+  "pinData": {},
   "connections": {
-    "Webhook Trigger": {
+    "Resume Upload Webhook": {
       "main": [
         [
           {
+            "node": "Validate & Split Resumes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Split Resumes": {
+      "main": [
+        [
+          {
+            "node": "Request Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request Valid?": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Validation Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Analyze Resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Resume": {
+      "main": [
+        [
+          {
+            "node": "Build Result & Dedup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyze Resume",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Analyze Resume",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Result & Dedup": {
+      "main": [
+        [
+          {
+            "node": "Log to Google Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
             "node": "Is Strong Fit?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log to Google Sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Website",
             "type": "main",
             "index": 0
           }
@@ -94,25 +588,12 @@
       "main": [
         [
           {
-            "node": "Gmail (Apps Script Trigger)",
+            "node": "Send Interview Invite",
             "type": "main",
             "index": 0
-          }
-        ],
-        [
+          },
           {
-            "node": "Update Dashboard Status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gmail (Apps Script Trigger)": {
-      "main": [
-        [
-          {
-            "node": "Update Dashboard Status",
+            "node": "Create Interview Event",
             "type": "main",
             "index": 0
           }
@@ -122,9 +603,15 @@
   },
   "active": true,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
   },
-  "versionId": "post-analysis-version",
-  "id": "post-analysis-workflow",
+  "versionId": "e9caa9d9-b33c-474e-91c9-1ecb2c09026e",
+  "meta": {
+    "instanceId": "e2d8d4bdbb89ef52569ce174b09f2a599a82c161fd45c92e0ae22316e4f2e9fc"
+  },
+  "nodeGroups": [],
+  "id": "rVy8fFuWfkE6gQtk",
   "tags": []
 }
