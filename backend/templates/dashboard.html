@@ -1253,8 +1253,13 @@
             if (selectedCandidateId) {
                 switchTab('candidates');
                 selectCandidate(selectedCandidateId);
-            } else if (window.location.hash === '#candidates') {
-                switchTab('candidates');
+            } else if (window.location.hash) {
+                const tab = window.location.hash.substring(1);
+                if (['candidates', 'schedule', 'analytics'].includes(tab)) {
+                    switchTab(tab);
+                } else {
+                    switchTab('dashboard');
+                }
             } else {
                 switchTab('dashboard');
             }
